@@ -1,16 +1,16 @@
 <template>
-  <div id="app">
-    <el-container class="main-container">
-      <el-header class="main-container-header"><top-nav></top-nav></el-header>
-      <el-container>
-        <el-aside width="200px" class="main-container-side">
-          <side-nav></side-nav>
-        </el-aside>
-        <el-main class="main-container-main">
-          <router-view />
-        </el-main>
-      </el-container>
-    </el-container>
+  <div id="app" class="main-container">
+    <div class="main-container-header" @click="testt">
+      <top-nav></top-nav>
+    </div>
+    <div class="main-container-mid">
+      <div class="left" :class="isCollapse ? 'left-shrink':'left-expand'">
+        <side-nav @isCollapse="getIsCollapse"></side-nav>
+      </div>
+      <div class="right">
+        <router-view />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -25,6 +25,7 @@ export default {
   },
   data() {
     return {
+      isCollapse: true,
       info: "333",
       msg: "99",
       info3: "",
@@ -44,16 +45,47 @@ export default {
         this.info3 = res.data;
       });
     },
+    getIsCollapse(isCollapse) {
+      this.isCollapse = isCollapse
+    },
+    testt(){
+      console.log(this.$router.path,888)
+      console.log(this.$route,778)
+
+    }
   },
 };
 </script>
 
 <style scoped lang="scss">
 .main-container {
-  background: red;
-  &-header{
-    background: blanchedalmond;
+  height: 100vh;
+  width: 100vw;
+  &-header {
+    height: 60px;
+    background: #0f256e;
   }
-
+  &-mid {
+    display: flex;
+    flex-direction: row;
+    // align-items: center;
+    height: calc(100vh - 60px);
+    .left {
+      background: #fff;
+      // box-shadow: 1px 0px 6px 0px rgba(32, 33, 36, 0.2);
+      box-shadow: 1px 0px 6px 0px red;
+    }
+    .left-expand {
+      width: 200px;
+    }
+    .left-shrink {
+      width: 64px;
+    }
+    .right {
+      width: 100%;
+      padding: 20px;
+      background: ghostwhite;
+    }
+  }
 }
 </style>
