@@ -83,7 +83,6 @@ export default {
     }
     .right {
       width: 100%;
-      padding: 20px;
       background: ghostwhite;
     }
   }

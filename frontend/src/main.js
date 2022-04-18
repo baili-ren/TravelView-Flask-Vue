@@ -8,6 +8,7 @@ import ElementUI from'element-ui'
 import'element-ui/lib/theme-chalk/index.css'
 import axios from 'axios'
 import echarts from 'echarts'
+import "echarts/map/js/china.js"
 
 
 Vue.config.productionTip = false
