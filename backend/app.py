@@ -1,69 +1,45 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
+from flask_migrate import Migrate
+from exts import db
+from models import Test_tb
+from routes import home_bp, chinaMap_bp
+import config
 
 app = Flask(__name__)
-app.config['JSON_AS_ASCII'] = False  # 禁止中文转义
+app.config.from_object(config)
+
+db.init_app(app)
+migrate = Migrate(app, db)
 
 
-@app.route("/user/login", methods=["POST"])
-def user_login():
-    """
-    用户登录
-    :return:
-    """
-    data = request.get_json()
-    userName = data.get("userName")
-    password = data.get("password")
-    if userName == "admin" and password == "123456":
-        return jsonify({
-            "code": 0,
-            "data": {
-                "token": "666666"
-            }
-        })
-    else:
-        return jsonify({
-            "code": 99999999,
-            "msg": "用户名或密码错误"
-        })
+# 路由
+app.register_blueprint(home_bp)
+app.register_blueprint(chinaMap_bp)
 
 
-@app.route("/user/info", methods=["GET", "POST"])
-def user_info():
-    """
-    获取当前用户信息
-    :return:
-    """
-    token = request.headers.get("token")
-    if token == "666666":
-        return jsonify({
-            "code": 0,
-            "data": {
-                "id": "1",
-                "userName": "admin",
-                "realName": "张三",
-                "userType": 1
-            }
-        })
-    return jsonify({
-        "code": 99990403,
-        "msg": "token不存在或已过期"
-    })
-
-
-@app.route("/")
+@app.route('/')
 def hello_world():
-    return "hello world"
 
+    # 写一个测试代码来验证是否连接成功
+    engine = db.get_engine()
+    with engine.connect() as conn:
+        result = conn.execute("select 1")
+        print(result.fetchone())
 
-@app.route("api/test", methods=["POST", "GET"])
-def get_name():
-    # print(request.form)
-    # print(request.data)
-    print(request.get_json())
-    if request.method == 'POST':
-        return "is POST"
-    else:
-        return "is GET"
+    # test01 = Test_tb(username="admin01", password="111")
+    # test02 = Test_tb(username="admin02", password="111")
+    # print(test01)
+    # db.session.add(test01)
+    # db.session.add(test02)
+    # db.session.commit()
+
+    data1 = Test_tb.query.first()
+    data_serialize = data1.test_schema()
+    print(data1, data_serialize,111)
+    print(jsonify(data_serialize),222)
+    # data2 = data1.schema()
+    # print(data2, jsonify(data2),222)
+    return data_serialize
 
 
 if __name__ == '__main__':
