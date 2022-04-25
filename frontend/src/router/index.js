@@ -1,9 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-// import HelloWorld from '@/components/HelloWorld'
 import Home from '@/pages/home'
-// import Province from '@/pages/province'
-import ChinaMap from '@/pages/chinaMap'
+import Province from '@/pages/province'
+import Map from '@/pages/map'
 
 
 Vue.use(Router)
@@ -17,17 +16,22 @@ export default new Router({
       path: '/home',
       name: 'Home',
       component: Home,
-      children: [
-        {
-          path: '/home/map',
-          component: () => import('../pages/chinaMap')
-        },
-      ]
+      // children: [
+      //   {
+      //     path: '/home/test',
+      //     component: () => import('../pages/test')
+      //   },
+      // ]
     },
     {
       path: '/map',
       name: 'map',
-      component: ChinaMap,
+      component: Map,
+    },
+    {
+      path: '/home/province',
+      name: 'province',
+      component: Province,
     },
   ]
 })

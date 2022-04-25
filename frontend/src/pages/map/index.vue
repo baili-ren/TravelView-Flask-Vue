@@ -1,11 +1,11 @@
 <template>
 <!-- 调用接口 -->
-    <div>chinaMap</div>
+    <div>map</div>
 </template>
 
 <script>
 export default {
-  name: 'ChinaMap',
+  name: 'Map',
   data () {
     return {
       

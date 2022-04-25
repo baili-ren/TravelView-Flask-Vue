@@ -1,6 +1,6 @@
 <template>
   <div class="home-container">
-    <div class="china-map" ref="chinaMapEcharts"></div>
+    <div id="chinaMap" class="china-map" ref="chinaMapEcharts"></div>
   </div>
 </template>
 
@@ -15,6 +15,7 @@ export default {
   },
   mounted() {
     this.initChinaMapEcharts();
+    console.log(this.$router,"this.$router===, 地图页面挂载时")
   },
   methods: {
     initData() {
@@ -250,6 +251,19 @@ export default {
       this.initData();
       option.series[0].data = this.dataMap2;
       this.chinaMapEcharts.setOption(option);
+
+      const _this = this
+      this.chinaMapEcharts.on('click', function(params){
+        if(params.data.name){
+          _this.$router.push({
+          path: "/home/province",
+          query: {province: params.name },
+        });
+        }else{
+          alert("该省份无数据")
+        }
+        console.log(_this.$router,"_this.$router  ，点击省份")
+      })
     },
   },
 };
@@ -260,8 +274,8 @@ export default {
   height: 100%;
   width: 100%;
   .china-map {
-    width: 100%;
-    height: 100%;
+    width: calc(100% - 16px);
+    height: calc(100% - 16px);
   }
 }
 </style>

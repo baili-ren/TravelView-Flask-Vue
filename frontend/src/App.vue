@@ -82,6 +82,7 @@ export default {
       width: 64px;
     }
     .right {
+      padding: 16px;
       width: 100%;
       background: ghostwhite;
     }
