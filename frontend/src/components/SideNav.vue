@@ -11,13 +11,17 @@
     >
        <el-menu-item index="/home">
         <i class="el-icon-menu"></i>
-        <span slot="title">首页</span>
+        <span slot="title">省份数据</span>
       </el-menu-item>
       <el-menu-item index="/map">
         <i class="el-icon-menu"></i>
-        <span slot="title">地图</span>
+        <span slot="title">散点地图</span>
       </el-menu-item>
-      <el-submenu index="3">
+      <el-menu-item index="/wholeChina">
+        <i class="el-icon-menu"></i>
+        <span slot="title">旅游经济</span>
+      </el-menu-item>
+      <!-- <el-submenu index="3">
         <template slot="title">
           <i class="el-icon-location"></i>
           <span slot="title">导航三</span>
@@ -34,7 +38,7 @@
           <span slot="title">选项4</span>
           <el-menu-item index="1-4-1">选项1</el-menu-item>
         </el-submenu>
-      </el-submenu>
+      </el-submenu> -->
       <el-menu-item  @click="toggleCollapse" class="item-bottom">
         <i :class=" isCollapse? 'el-icon-caret-right': 'el-icon-caret-left'"></i>
       </el-menu-item>

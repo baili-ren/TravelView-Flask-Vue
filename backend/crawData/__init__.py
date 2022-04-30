@@ -4,3 +4,4 @@
 # @Software: PyCharm
 
 # 将爬取的数据存到数据库中
+from .proxies import proxies as proxList

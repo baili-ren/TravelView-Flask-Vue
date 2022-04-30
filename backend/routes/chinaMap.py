@@ -5,6 +5,7 @@
 
 from flask import Blueprint
 
+
 bp = Blueprint('chinaMap', __name__, url_prefix="/v1/apis/chinaMap")
 
 # 测试接口

@@ -1,5 +1,6 @@
 <template>
   <div class="home-container">
+    <div class="title">中国各省份旅游数据分析</div>
     <div id="chinaMap" class="china-map" ref="chinaMapEcharts"></div>
   </div>
 </template>
@@ -168,7 +169,7 @@ export default {
             let info =
               '<p style="font-size:18px">' +
               params.name +
-              '</p><p style="font-size:14px">点击显示该省份的景区数量和客流量</p>';
+              '</p><p style="font-size:14px">点击显示该省份的旅游信息详情</p>';
             return info;
           },
           backgroundColor: "rgba(15,37,110, 0.7)", //提示标签背景颜色
@@ -271,8 +272,14 @@ export default {
 
 <style scoped lang = "scss">
 .home-container {
-  height: 100%;
-  width: 100%;
+  height: calc(100% - 32px);
+  width: calc(100% - 32px);
+  padding: 16px;
+  background: rgba(15,37,110, 0.7);
+  border-radius: 10px;
+  .title{
+    color: #fff;
+  }
   .china-map {
     width: calc(100% - 16px);
     height: calc(100% - 16px);

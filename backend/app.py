@@ -1,13 +1,15 @@
-from flask import Flask, jsonify
+from flask import Flask, request
 from flask_migrate import Migrate
+from flask_cors import CORS
 from exts import db
-from models import Test_tb
+from models import Test_tb, ProvinceScenic_tb, Scenic5A_tb
 from routes import home_bp, chinaMap_bp
+import json
 import config
 
 app = Flask(__name__)
 app.config.from_object(config)
-
+CORS(app, resources=r'/*')
 db.init_app(app)
 migrate = Migrate(app, db)
 
@@ -19,27 +21,52 @@ app.register_blueprint(chinaMap_bp)
 
 @app.route('/')
 def hello_world():
-
-    # 写一个测试代码来验证是否连接成功
-    engine = db.get_engine()
-    with engine.connect() as conn:
-        result = conn.execute("select 1")
-        print(result.fetchone())
-
     # test01 = Test_tb(username="admin01", password="111")
-    # test02 = Test_tb(username="admin02", password="111")
-    # print(test01)
+    # test02 = Test_tb(username="admin03", password="111")
     # db.session.add(test01)
     # db.session.add(test02)
     # db.session.commit()
 
-    data1 = Test_tb.query.first()
-    data_serialize = data1.test_schema()
-    print(data1, data_serialize,111)
-    print(jsonify(data_serialize),222)
-    # data2 = data1.schema()
-    # print(data2, jsonify(data2),222)
-    return data_serialize
+    # ProvinceScenic_tb.query.filter_by().delete()
+    # db.session.commit()
+
+    print(1234)
+    data1 = Test_tb.query.all()
+    data_serialize = []
+    for i in data1:
+        data_serialize.append(i.test_schema())
+
+    result = {
+        "msg": "testData",
+        "data": data_serialize,
+    }
+    return result
+
+
+@app.route('/api/test')
+def test():
+    return "测试接口"
+
+# 接口 --- 查询某省的5A景区
+@app.route('/api/province/5a', methods=['POST', 'GET'])
+def get_province_5A():
+    if request.method == "POST":
+        params = request.get_data()
+        params = json.loads(params.decode("utf-8"))
+        province = params["province"]
+
+        data = Scenic5A_tb.query.filter_by(provinceName=str(province)).all()
+        data_serialize = []
+        for i in data:
+            data_serialize.append(i.schema())
+        result = {
+            "msg": province + "5A景区",
+            "data": data_serialize
+        }
+        return result
+    else:
+        return "/api/province/5a"
+
 
 
 if __name__ == '__main__':

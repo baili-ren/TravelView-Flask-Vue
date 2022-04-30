@@ -3,6 +3,10 @@ import Router from 'vue-router'
 import Home from '@/pages/home'
 import Province from '@/pages/province'
 import Map from '@/pages/map'
+import Test from '@/pages/test'
+import WholeChina from '@/pages/wholeChina'
+
+
 
 
 Vue.use(Router)
@@ -32,6 +36,16 @@ export default new Router({
       path: '/home/province',
       name: 'province',
       component: Province,
+    },
+    {
+      path: '/wholeChina',
+      name: 'wholeChina',
+      component: WholeChina,
+    },
+    {
+      path: '/test',
+      name: 'test',
+      component: Test,
     },
   ]
 })
