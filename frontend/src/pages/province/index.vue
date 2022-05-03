@@ -14,7 +14,11 @@
       <div class="tree item-echarts" ref="treeEcharts"></div>
       <!-- 人气景区 -->
       <!-- <div class="polar-bar item-echarts" ref="polarBarEcharts"></div> -->
-      <div id="categoryChart" class="category-chart item-echarts" ref="categoryChart"></div>
+      <div
+        id="categoryChart"
+        class="category-chart item-echarts"
+        ref="categoryChart"
+      ></div>
     </div>
   </div>
 </template>
@@ -45,34 +49,52 @@ export default {
           },
         ],
       },
+      dataXJ_JD: [
+        "库尔勒体育公园",
+        "天山天池",
+        "天山大峡谷",
+        "赛里木湖",
+        "那拉提旅游风景区",
+        "中华福寿山",
+        "喀纳斯景区",
+        "天山野生动物园",
+        "乌尔禾魔鬼城",
+        "温宿大峡谷",
+        "定海神针",
+        "火焰山景区",
+        "马牙山",
+        "独山子大峡谷",
+        "南山牧场",
+      ],
+      dataXJ_Num: [676, 76, 34, 34, 20, 20, 26, 16, 14, 28, 4, 6, 6, 16, 6],
     };
   },
   mounted() {
     this.initData();
     // this.initTreeEcharts();
-    this.initPolarBarEcharts()
+    this.initPolarBarEcharts();
   },
   methods: {
     initData() {
       this.provienceName = this.$router.history.current.query;
       console.log(this.$router.history, "this.$router.history==== 省份页面");
-      const params ={
-        province :this.provienceName["province"]
-      }
-      this.axios.post("/api/province/5a",params).then((res) => {
-        console.log(res, "res===");
-        this.treeData.name = this.provienceName["province"]
-        let spotsList = []
-        res.data.data.map(item => {
-          spotsList.push({
-            name: item.Scenic5AName,
-            value: item.id
-          })
-        })
-        this.treeData.children[0].children = spotsList
-        this.initTreeEcharts()
-      });
-      console.log(this.treeData,"this.treeData======")
+      const params = {
+        province: this.provienceName["province"],
+      };
+      // this.axios.post("/api/province/5a", params).then((res) => {
+      //   console.log(res, "res===");
+      //   this.treeData.name = this.provienceName["province"];
+      //   let spotsList = [];
+      //   res.data.data.map((item) => {
+      //     spotsList.push({
+      //       name: item.Scenic5AName,
+      //       value: item.id,
+      //     });
+      //   });
+      //   this.treeData.children[0].children = spotsList;
+      //   this.initTreeEcharts();
+      // });
+      console.log(this.treeData, "this.treeData======");
     },
     goBack() {
       this.$router.back();
@@ -137,22 +159,46 @@ export default {
 
     // 人气景点
     initPolarBarEcharts() {
-      this.polarBarChart = this.$echarts.init(document.getElementById('categoryChart'));
+      this.polarBarChart = this.$echarts.init(
+        document.getElementById("categoryChart")
+      );
       let options = {
+        title: {
+						text: '推荐景点',
+
+						textAlign:'center'
+					},
         xAxis: {
           type: "category",
-          data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+          data: this.dataXJ_JD,
+          axisLabel: {
+            interval: 0, //横轴信息全部显示
+            rotate: -15, //-15度角倾斜显示
+          },
         },
         yAxis: {
           type: "value",
         },
         series: [
           {
-            data: [120, 200, 150, 80, 70, 110, 130],
+            data: this.dataXJ_Num,
             type: "bar",
             showBackground: true,
             backgroundStyle: {
               color: "rgba(180, 180, 180, 0.2)",
+            },
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true, //开启显示
+                  position: "top", //在上方显示
+                  textStyle: {
+                    //数值样式
+                    color: "black",
+                    fontSize: 16,
+                  },
+                },
+              },
             },
           },
         ],
@@ -179,7 +225,7 @@ export default {
     text-align: center;
     display: flex;
     justify-content: space-between;
-    color: #0F256E;
+    color: #0f256e;
   }
   &-body {
     width: 100%;
@@ -196,7 +242,7 @@ export default {
       height: calc(100% - 16px);
     }
     .category-chart {
-      width: 50%;
+      width: calc(100% - 16px);
       height: calc(100% - 16px);
     }
   }

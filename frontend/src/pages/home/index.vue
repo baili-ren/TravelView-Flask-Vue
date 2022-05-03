@@ -2,6 +2,10 @@
   <div class="home-container">
     <div class="title">中国各省份旅游数据分析</div>
     <div id="chinaMap" class="china-map" ref="chinaMapEcharts"></div>
+    <div class="btns">
+      <el-button type="info" @click="showHotMap">热门程度</el-button>
+      <el-button type="info" @click="showNumMap">景区数量</el-button>
+    </div>
   </div>
 </template>
 
@@ -11,17 +15,67 @@ export default {
   data() {
     return {
       chinaMapEcharts: null,
-      dataMap2: [],
+      dataMapHeat: [],
+      dataMapCount: [],
+      showHot: true, //默认展示热门程度
     };
   },
   mounted() {
-    this.initChinaMapEcharts();
-    console.log(this.$router,"this.$router===, 地图页面挂载时")
+    this.initData();
+    // this.initChinaMapEcharts();
+    console.log(this.$router, "this.$router===, 地图页面挂载时");
   },
   methods: {
+    // 各省旅游热度地图
+    showHotMap() {
+      this.showHot = true;
+      this.initChinaMapEcharts();
+    },
+    // 各省景点数量地图
+    showNumMap() {
+      this.showHot = false;
+      this.initChinaMapEcharts();
+    },
     initData() {
+      // 全国省份列表   万人次
+      this.dataMapHeat = [
+        { name: "北京", value: 376.9 },
+        { name: "天津", value: 50.76 },
+        { name: "上海", value: 599.16 },
+        { name: "重庆", value: 169.72 },
+        { name: "河北", value: 73.56 },
+        { name: "河南", value: 113.76 },
+        { name: "云南", value: 586.5 },
+        { name: "辽宁", value: 236.93 },
+        { name: "黑龙江", value: 99.29 },
+        { name: "湖南", value: 250.14 },
+        { name: "安徽", value: 210.74 },
+        { name: "山东", value: 294.41 },
+        { name: "新疆", value: 25.78 },
+        { name: "江苏", value: 266.46 },
+        { name: "浙江", value: 329.83 },
+        { name: "江西", value: 61.14 },
+        { name: "湖北", value: 349.94 },
+        { name: "广西", value: 294.8 },
+        { name: "甘肃", value: 11.37 },
+        { name: "山西", value: 49.8 },
+        { name: "内蒙古", value: 186.56 },
+        { name: "陕西", value: 329.61 },
+        { name: "吉林", value: 121.11 },
+        { name: "福建", value: 239.98 },
+        { name: "贵州", value: 23.5 },
+        { name: "广东", value: 856.96 },
+        { name: "青海", value: 4.7 },
+        { name: "西藏", value: 36.91 },
+        { name: "四川", value: 313.09 },
+        { name: "宁夏", value: 3.61 },
+        { name: "海南", value: 107.91 },
+        { name: "台湾", value: 56.34 },
+        { name: "香港", value: 57.34 },
+        { name: "澳门", value: 67.34 },
+      ];
       // 景区数量
-      this.dataMap2 = [
+      this.dataMapCount = [
         {
           name: "北京",
           value: 239,
@@ -68,7 +122,7 @@ export default {
         },
         {
           name: "山东",
-          value: 1200,
+          value: 220,
         },
         {
           name: "新疆",
@@ -160,15 +214,41 @@ export default {
           value: 56,
         },
       ];
+
+      // 查询各省的热度与景点数
+      this.axios.get("/api/province/info").then((res) => {
+        const data = res.data.data
+        let arrCount = []
+        let arrHeat = []
+        data.map(item => {
+          arrCount.push({
+            name: item.provinceName,
+            value: item.count,
+          })
+          arrHeat.push({
+            name: item.provinceName,
+            value: item.heat
+          })
+        })
+        this.dataMapHeat = arrHeat
+        this.dataMapCount =arrCount
+        this.initChinaMapEcharts()
+      });
     },
     initChinaMapEcharts() {
       this.chinaMapEcharts = this.$echarts.init(this.$refs.chinaMapEcharts);
+      let label = "热度"
+      if(this.showHot){
+        label = "热度"
+      }else{
+        label="景区数"
+      }
       let option = {
         tooltip: {
           formatter: function (params) {
             let info =
               '<p style="font-size:18px">' +
-              params.name +
+              params.name+ ":" + params.value +`${label}`+
               '</p><p style="font-size:14px">点击显示该省份的旅游信息详情</p>';
             return info;
           },
@@ -179,8 +259,8 @@ export default {
         },
         visualMap: {
           min: 1,
-          max: 900,
-          text: ["High", "Low"],
+          max: 100000,
+          text: ["最热门", "最冷门"],
           realtime: false,
           calculable: true,
           inRange: {
@@ -249,22 +329,30 @@ export default {
           },
         ],
       };
-      this.initData();
-      option.series[0].data = this.dataMap2;
+      if (this.showHot) {
+        option.series[0].data = this.dataMapHeat;
+        option.visualMap.max=100000
+        option.visualMap.text=["最热门", "最冷门"]
+
+      } else {
+        option.series[0].data = this.dataMapCount;
+        option.visualMap.max=10000
+        option.visualMap.text=["最多景点", "最少景点"]
+      }
       this.chinaMapEcharts.setOption(option);
 
-      const _this = this
-      this.chinaMapEcharts.on('click', function(params){
-        if(params.data.name){
+      const _this = this;
+      this.chinaMapEcharts.on("click", function (params) {
+        if (params.data.name) {
           _this.$router.push({
-          path: "/home/province",
-          query: {province: params.name },
-        });
-        }else{
-          alert("该省份无数据")
+            path: "/home/province",
+            query: { province: params.name },
+          });
+        } else {
+          alert("该省份无数据");
         }
-        console.log(_this.$router,"_this.$router  ，点击省份")
-      })
+        console.log(_this.$router, "_this.$router  ，点击省份");
+      });
     },
   },
 };
@@ -275,14 +363,24 @@ export default {
   height: calc(100% - 32px);
   width: calc(100% - 32px);
   padding: 16px;
-  background: rgba(15,37,110, 0.7);
+  background: rgba(15, 37, 110, 0.7);
   border-radius: 10px;
-  .title{
+  .title {
     color: #fff;
   }
   .china-map {
     width: calc(100% - 16px);
     height: calc(100% - 16px);
+  }
+  .btns {
+    position: absolute;
+    display: flex;
+    /* flex-flow: column; */
+    bottom: 100px;
+    right: 100px;
+    .el-button {
+      border-radius: 50px;
+    }
   }
 }
 </style>

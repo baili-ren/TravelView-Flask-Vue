@@ -21,6 +21,7 @@ Vue.use(BaiduMap, {
   ak: 'VtvFQV2H0BHUdB7Ynk4FipHAQRKi5SGx'
 })
 // axios.defaults.baseURL='http://127.0.0.1:5000'
+axios.defaults.baseURL='http://119.91.232.173:5000'
 
 /* eslint-disable no-new */
 new Vue({
