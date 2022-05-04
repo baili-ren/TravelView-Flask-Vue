@@ -5,9 +5,7 @@ import Province from '@/pages/province'
 import Map from '@/pages/map'
 import Test from '@/pages/test'
 import WholeChina from '@/pages/wholeChina'
-
-
-
+import SightDetail from '@/pages/sightDetail'
 
 Vue.use(Router)
 
@@ -28,14 +26,19 @@ export default new Router({
       // ]
     },
     {
-      path: '/map',
-      name: 'map',
-      component: Map,
-    },
-    {
       path: '/home/province',
       name: 'province',
       component: Province,
+    },
+    {
+      path: '/home/province/sightDetail',
+      name: 'sightDetail',
+      component: SightDetail,
+    },
+    {
+      path: '/map',
+      name: 'map',
+      component: Map,
     },
     {
       path: '/wholeChina',

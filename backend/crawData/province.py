@@ -53,8 +53,8 @@ def crawProviceData():
             data = ProvinceScenic_tb(provinceName = item, ScenicName=scenicNameList[i])
             i = i + 1
             print(data, data.schema(),"data---------------")
-        #     db.session.add(data)
-        # db.session.commit()
+            db.session.add(data)
+        db.session.commit()
     return "获取各省推荐的景点"
 
 

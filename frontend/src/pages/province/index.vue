@@ -13,7 +13,6 @@
       <!-- 5A景区 -->
       <div class="tree item-echarts" ref="treeEcharts"></div>
       <!-- 人气景区 -->
-      <!-- <div class="polar-bar item-echarts" ref="polarBarEcharts"></div> -->
       <div
         id="categoryChart"
         class="category-chart item-echarts"
@@ -75,36 +74,37 @@ export default {
     this.initPolarBarEcharts();
   },
   methods: {
-    initData() {
-      this.provienceName = this.$router.history.current.query;
-      console.log(this.$router.history, "this.$router.history==== 省份页面");
-      const params = {
-        province: this.provienceName["province"],
-      };
-      // this.axios.post("/api/province/5a", params).then((res) => {
-      //   console.log(res, "res===");
-      //   this.treeData.name = this.provienceName["province"];
-      //   let spotsList = [];
-      //   res.data.data.map((item) => {
-      //     spotsList.push({
-      //       name: item.Scenic5AName,
-      //       value: item.id,
-      //     });
-      //   });
-      //   this.treeData.children[0].children = spotsList;
-      //   this.initTreeEcharts();
-      // });
-      console.log(this.treeData, "this.treeData======");
-    },
     goBack() {
       this.$router.back();
+    },
+    initData() {
+      this.provienceName = this.$router.history.current.query;
+      console.log(this.$router.history, "this.$router.history==== 省份详情页面");
+      const params = {
+        province: this.provienceName["province"],
+        sightName: "",
+        star: "5A",
+      };
+      // 查询各省的5A景区
+      this.axios.post("/api/province/5a", params).then((res) => {
+        console.log(res, "res===");
+        this.treeData.name = this.provienceName["province"];
+        let spotsList = [];
+        res.data.data.map((item) => {
+          spotsList.push({
+            name: item.sightName,
+            value: item.intro,
+          });
+        });
+        this.treeData.children[0].children = spotsList;
+        this.initTreeEcharts();
+      });
     },
 
     // 5A景区的树状图
     initTreeEcharts() {
       this.treeChart = this.$echarts.init(this.$refs.treeEcharts);
       this.treeChart.on("contextmenu", (params) => {
-        console.log(params);
         if (params.componentType === "series") {
           this.selectedOrg = params.data;
           this.popoverPanelShow = true;
@@ -112,7 +112,7 @@ export default {
           return;
         }
       });
-      this.treeChart.setOption({
+      let option = {
         tooltip: {
           trigger: "item",
           triggerOn: "mousemove",
@@ -151,6 +151,20 @@ export default {
             animationDurationUpdate: 750,
           },
         ],
+      }
+      this.treeChart.setOption(option);
+
+      const _this = this;
+      this.treeChart.on("click", function (params) {
+        console.log("params===",params)
+        if (params.data.name) {
+          // _this.$router.push({
+          //   path: "/home/province/detail",
+          //   query: { province: params.name },
+          // });
+        } else {
+          alert("无详情");
+        }
       });
     },
     hidePopoverPanel() {
@@ -164,10 +178,10 @@ export default {
       );
       let options = {
         title: {
-						text: '推荐景点',
+          text: "推荐景点",
 
-						textAlign:'center'
-					},
+          textAlign: "center",
+        },
         xAxis: {
           type: "category",
           data: this.dataXJ_JD,
