@@ -1,5 +1,5 @@
 # 数据库的配置变量
-HOSTNAME = '127.0.0.1'
+HOSTNAME = 'localhost'
 PORT     = '3306'
 DATABASE = 'travel_flask'
 USERNAME = 'root'

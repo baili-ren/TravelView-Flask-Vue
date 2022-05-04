@@ -4,6 +4,11 @@
 # @Software: PyCharm
 
 from flask import Blueprint
+import sys
+sys.path.append("..")
+import web_sql
+
+
 
 
 bp = Blueprint('chinaMap', __name__, url_prefix="/v1/apis/chinaMap")
