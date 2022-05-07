@@ -1,9 +1,7 @@
 <template>
   <!-- 调用接口 -->
   <div class="map-container">
-    <baidu-map class="map" :center="{ lng: 116.404, lat: 39.915 }" :zoom="14">
-      <bml-heatmap :data="data" :max="100" :radius="20"> </bml-heatmap>
-    </baidu-map>
+      11111
   </div>
 </template>
 
@@ -25,6 +23,9 @@ export default {
       option: {},
       mapData: {},
     };
+  },
+  created(){
+    console.log(this.$route,"this.$route============")
   },
   mounted() {
     // this.initBaiduMap();

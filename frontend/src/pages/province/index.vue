@@ -48,30 +48,20 @@ export default {
           },
         ],
       },
-      dataXJ_JD: [
-        "库尔勒体育公园",
-        "天山天池",
-        "天山大峡谷",
-        "赛里木湖",
-        "那拉提旅游风景区",
-        "中华福寿山",
-        "喀纳斯景区",
-        "天山野生动物园",
-        "乌尔禾魔鬼城",
-        "温宿大峡谷",
-        "定海神针",
-        "火焰山景区",
-        "马牙山",
-        "独山子大峡谷",
-        "南山牧场",
-      ],
-      dataXJ_Num: [676, 76, 34, 34, 20, 20, 26, 16, 14, 28, 4, 6, 6, 16, 6],
+      // 柱状图数据
+      colSightNameData: null, //景点名称
+      colSaleCountData: null, //销量
+      colHeatData: null, //热度
+      colScoreData: null, // 评分
+      colPriceData: null, // 价格
+      colcommentCountData: null, // 评论数
+      pointsArr: null,
     };
   },
   mounted() {
     this.initData();
     // this.initTreeEcharts();
-    this.initPolarBarEcharts();
+    // this.initPolarBarEcharts();
   },
   methods: {
     goBack() {
@@ -79,7 +69,7 @@ export default {
     },
     initData() {
       this.provienceName = this.$router.history.current.query;
-      console.log(this.$router.history, "this.$router.history==== 省份详情页面");
+      console.log(this.$router.history, "this.$router.history==== 省份");
       const params = {
         province: this.provienceName["province"],
         sightName: "",
@@ -87,17 +77,53 @@ export default {
       };
       // 查询各省的5A景区
       this.axios.post("/api/province/5a", params).then((res) => {
-        console.log(res, "res===");
         this.treeData.name = this.provienceName["province"];
         let spotsList = [];
+        let pointsInfoList = [];
         res.data.data.map((item) => {
           spotsList.push({
             name: item.sightName,
             value: item.intro,
           });
+          pointsInfoList.push({
+            sight: item.sightName,
+            lng: item.point[0],
+            lat: item.point[1],
+            price: item.price,
+            intro: item.intro,
+            saleCount: item.saleCount,
+            score: item.score,
+            commentCount: item.commentCount,
+            address: item.address,
+          });
         });
+        this.pointsArr = pointsInfoList;
         this.treeData.children[0].children = spotsList;
         this.initTreeEcharts();
+      });
+
+      // 推荐景区柱状图
+      const params4a = {
+        province: this.provienceName["province"],
+        sightName: "",
+        star: "4A",
+      };
+      this.axios.post("/api/province/5a", params4a).then((res) => {
+        let sightNameArr = [];
+        let saleCountArr = [];
+        let scoreArr = [];
+        let priceArr = [];
+        res.data.data.map((item) => {
+          saleCountArr.push(item.saleCount);
+          sightNameArr.push(item.sightName);
+          scoreArr.push(item.score);
+          priceArr.push(item.price);
+        });
+        this.colSightNameData = sightNameArr;
+        this.colSaleCountData = saleCountArr;
+        this.colScoreData = scoreArr;
+        this.colPriceData = priceArr;
+        this.initPolarBarEcharts();
       });
     },
 
@@ -151,19 +177,36 @@ export default {
             animationDurationUpdate: 750,
           },
         ],
-      }
+      };
       this.treeChart.setOption(option);
-
       const _this = this;
+      // 点击景点跳转百度地图
       this.treeChart.on("click", function (params) {
-        console.log("params===",params)
-        if (params.data.name) {
+        if (params.data.name && params.data.name != "5A景区") {
+          // 对应景点的信息
+          const spot = _this.pointsArr.find((res) => {
+            return res.sight == params.data.name;
+          });
+          console.log(_this.pointsArr, "pointsArr---------景点的信息---");
+          _this.$router.push({
+            path: "/home/province/sightDetail",
+            query: {
+              province: _this.provienceName["province"],
+              sight: params.name,
+              lng: spot.lng,
+              lat: spot.lat,
+              points: spot,
+            },
+          });
+          // params传参页面刷新数据丢失，可以存在localStorage中
           // _this.$router.push({
-          //   path: "/home/province/detail",
-          //   query: { province: params.name },
+          //   name: "SightDetail",
+          //   params: {
+          //     test001:"999"
+          //   },
           // });
         } else {
-          alert("无详情");
+          console("无详情");
         }
       });
     },
@@ -178,13 +221,25 @@ export default {
       );
       let options = {
         title: {
-          text: "推荐景点",
-
-          textAlign: "center",
+          text: "推荐景点的信息对比",
+          textAlign: "left",
+          textStyle: {
+            color: "#696969",
+            fontWeight: "500",
+            fontSize: 16,
+          },
+        },
+        toolbox: {
+          feature: {
+            magicType: { type: ["line", "bar"] }, //图表类型切换
+          },
+        },
+        legend: {
+          data: ["销量", "评分", "价格"],
         },
         xAxis: {
           type: "category",
-          data: this.dataXJ_JD,
+          data: this.colSightNameData, //景点名称
           axisLabel: {
             interval: 0, //横轴信息全部显示
             rotate: -15, //-15度角倾斜显示
@@ -195,11 +250,56 @@ export default {
         },
         series: [
           {
-            data: this.dataXJ_Num,
+            name: "销量",
+            data: null, //景点数值
             type: "bar",
-            showBackground: true,
+            showBackground: false,
             backgroundStyle: {
-              color: "rgba(180, 180, 180, 0.2)",
+              color: "rgba(180, 180, 180, 0.1)",
+            },
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true, //开启显示
+                  position: "top", //在上方显示
+                  textStyle: {
+                    //数值样式
+                    color: "black",
+                    fontSize: 16,
+                  },
+                },
+              },
+            },
+          },
+          {
+            name: "评分",
+            data: null, //景点数值
+            type: "bar",
+            showBackground: false,
+            backgroundStyle: {
+              color: "rgba(180, 180, 180, 0.1)",
+            },
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true, //开启显示
+                  position: "top", //在上方显示
+                  textStyle: {
+                    //数值样式
+                    color: "black",
+                    fontSize: 16,
+                  },
+                },
+              },
+            },
+          },
+          {
+            name: "价格",
+            data: null, //景点数值
+            type: "bar",
+            showBackground: false,
+            backgroundStyle: {
+              color: "rgba(180, 180, 180, 0.1)",
             },
             itemStyle: {
               normal: {
@@ -216,7 +316,33 @@ export default {
             },
           },
         ],
+        dataZoom: [
+          // dataZoom组件 用于区域缩放
+          {
+            type: "slider",
+            show: true,
+            xAxisIndex: [0], // 控制对应的x轴，这里表示这个dataZoom控制第一个x轴
+            height: 8,
+            borderColor: "#ADD8E6",
+            fillerColor: "#ADD8E6", // 滑块颜色
+            bottom: "5px", // 滚动条距离页面底部的距离
+            startValue: 0, // 数据窗口范围的起始数值
+            endValue: 10, // 数据窗口范围的结束数值
+            showDataShadow: false,
+            showDetail: false,
+          },
+          {
+            type: "inside",
+            xAxisIndex: [0], // 控制对应的x轴，这里表示这个dataZoom控制第一个x轴
+            startValue: 0, // 数据窗口范围的起始数值
+            endValue: 10, // 数据窗口范围的结束数值
+          },
+        ],
       };
+      options.series[0].data = this.colSaleCountData;
+      options.series[1].data = this.colScoreData;
+      options.series[2].data = this.colPriceData;
+
       this.polarBarChart.setOption(options);
     },
   },
@@ -256,7 +382,8 @@ export default {
       height: calc(100% - 16px);
     }
     .category-chart {
-      width: calc(100% - 16px);
+      padding: 16px;
+      width: calc(100% - 48px);
       height: calc(100% - 16px);
     }
   }

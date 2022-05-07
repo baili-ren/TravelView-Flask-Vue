@@ -15,11 +15,11 @@
       </el-menu-item>
       <el-menu-item index="/map">
         <i class="el-icon-menu"></i>
-        <span slot="title">散点地图</span>
+        <span slot="title">热门景点</span>
       </el-menu-item>
       <el-menu-item index="/wholeChina">
         <i class="el-icon-menu"></i>
-        <span slot="title">旅游经济</span>
+        <span slot="title">景点分析</span>
       </el-menu-item>
       <!-- <el-submenu index="3">
         <template slot="title">

@@ -27,27 +27,27 @@ export default new Router({
     },
     {
       path: '/home/province',
-      name: 'province',
+      name: 'Province',
       component: Province,
     },
     {
       path: '/home/province/sightDetail',
-      name: 'sightDetail',
+      name: 'SightDetail',
       component: SightDetail,
     },
     {
       path: '/map',
-      name: 'map',
+      name: 'Map',
       component: Map,
     },
     {
       path: '/wholeChina',
-      name: 'wholeChina',
+      name: 'WholeChina',
       component: WholeChina,
     },
     {
       path: '/test',
-      name: 'test',
+      name: 'Test',
       component: Test,
     },
   ]

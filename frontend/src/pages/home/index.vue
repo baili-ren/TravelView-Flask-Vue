@@ -37,7 +37,7 @@ export default {
       this.initChinaMapEcharts();
     },
     initData() {
-      // 全国省份列表   万人次
+      // 全国省份列表   万人次 接口失败后的备用数据
       this.dataMapHeat = [
         { name: "北京", value: 376.9 },
         { name: "天津", value: 50.76 },
@@ -74,7 +74,7 @@ export default {
         { name: "香港", value: 57.34 },
         { name: "澳门", value: 67.34 },
       ];
-      // 景区数量
+      // 景区数量 接口失败后的备用数据
       this.dataMapCount = [
         {
           name: "北京",
